@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fozzy Image Enhancer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center" style="background-color:#69A197;">
+    <h1 class="text-3xl font-bold mb-8 mt-8 text-center">Fozzy Image Enhancer</h1>
+    
+    <div class="w-full max-w-md bg-white rounded-xl shadow-md overflow-hidden mx-4">
+        <div class="p-8" style="background-color: #E5F993;">
+            <form id="enhancementForm" enctype="multipart/form-data" class="space-y-6">
+                <div>
+                    <label for="file" class="block text-sm font-medium text-gray-700">Upload Image</label>
+                    <input type="file" id="file" name="file" accept="image/*" required class="mt-1 block w-full">
+                </div>
+                <div>
+                    <label for="enhancement_type" class="block text-sm font-medium text-gray-700">Enhancement Type</label>
+                    <select id="enhancement_type" name="enhancement_type" class="mt-1 block w-full p-2 border rounded" onchange="toggleControls()">
+                        <option value="grayscale">Grayscale</option>
+                        <option value="rgb">RGB</option>
+                    </select>
+                </div>
+                <!-- <div id="rgbControls" style="display:none;">
+                    <label for="r" class="block text-sm font-medium text-gray-700">Red</label>
+                    <input type="range" id="r" name="r" min="-255" max="255" value="0" class="mt-1 block w-full">
+                    <span id="rValue" class="text-sm text-gray-500">0</span>
+                    
+                    <label for="g" class="block text-sm font-medium text-gray-700 mt-4">Green</label>
+                    <input type="range" id="g" name="g" min="-255" max="255" value="0" class="mt-1 block w-full">
+                    <span id="gValue" class="text-sm text-gray-500">0</span>
+                    
+                    <label for="b" class="block text-sm font-medium text-gray-700 mt-4">Blue</label>
+                    <input type="range" id="b" name="b" min="-255" max="255" value="0" class="mt-1 block w-full">
+                    <span id="bValue" class="text-sm text-gray-500">0</span>
+                </div> -->
+                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                    Enhance Image
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="result" class="mt-8 w-full max-w-md">
+        <img id="enhancedImage" class="w-full rounded-xl shadow-md" style="display:none;">
+    </div>
+
+    <script>
+        function toggleControls() {
+            const enhancementType = document.getElementById('enhancement_type').value;
+            document.getElementById('rgbControls').style.display = enhancementType === 'rgb' ? 'block' : 'none';
+        }
+
+        function updateSliderValue(sliderId, valueId) {
+            const slider = document.getElementById(sliderId);
+            const valueSpan = document.getElementById(valueId);
+            valueSpan.textContent = slider.value;
+            slider.oninput = function() {
+                valueSpan.textContent = this.value;
+            }
+        }
+
+        // updateSliderValue('r', 'rValue');
+        // updateSliderValue('g', 'gValue');
+        // updateSliderValue('b', 'bValue');
+
+        document.getElementById('enhancementForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                const img = document.getElementById('enhancedImage');
+                img.src = url;
+                img.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
